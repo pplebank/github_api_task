@@ -11,8 +11,8 @@ public class AppConfig {
 
     @Bean
     public WebClient webClient() {
-        HttpClient httpClient = HttpClient.create();
-        ReactorClientHttpConnector connector = new ReactorClientHttpConnector(httpClient);
+        var httpClient = HttpClient.create();
+        var connector = new ReactorClientHttpConnector(httpClient);
         return WebClient.builder()
                 .clientConnector(connector)
                 .build();

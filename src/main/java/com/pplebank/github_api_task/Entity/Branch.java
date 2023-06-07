@@ -1,20 +1,22 @@
 package com.pplebank.github_api_task.Entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.pplebank.github_api_task.Serializer.BranchDeserializer;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@JsonDeserialize(using = BranchDeserializer.class)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Branch {
+
+    private Commit commit;
     private String name;
-    private String lastCommit;
-
-    public Branch() {
+    @JsonProperty("commit")
+    public String getCommit(){
+        return commit.sha();
     }
+    public record Commit(String sha) {
 
-    public Branch(String name, String lastCommit) {
-        this.name = name;
-        this.lastCommit = lastCommit;
     }
 }

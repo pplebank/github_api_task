@@ -1,29 +1,28 @@
 package com.pplebank.github_api_task.Entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.pplebank.github_api_task.Serializer.GithubRepositoryDeserializer;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-@JsonDeserialize(using = GithubRepositoryDeserializer.class)
+@NoArgsConstructor
+@AllArgsConstructor
 public class GithubRepository {
+
     private String name;
-    private String owner;
+    private Owner owner;
     private boolean fork;
-    private String branchesUrl;
+    private String branches_url;
     private List<Branch> branches;
 
-
-    public GithubRepository() {
+    @JsonProperty("owner")
+    public String getOwner(){
+        return owner.login();
     }
-
-    public GithubRepository(String name, String owner, boolean fork, String branchesUrl) {
-        this.name = name;
-        this.owner = owner;
-        this.fork = fork;
-        this.branchesUrl = branchesUrl;
+    public record Owner(String login) {
     }
-
 }

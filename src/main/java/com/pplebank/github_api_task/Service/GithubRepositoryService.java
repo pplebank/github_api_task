@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 
 @Service
 public class GithubRepositoryService {
@@ -21,37 +21,31 @@ public class GithubRepositoryService {
         this.webClient = webClient;
     }
 
-    public Mono<List<GithubRepository>> listRepositories(String username) {
-        String url = "https://api.github.com/users/" + username + "/repos";
-
+    public Flux<GithubRepository> listRepositories(String username) {
+        var url = "https://api.github.com/users/" + username + "/repos";
         return webClient.get()
                 .uri(url)
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .onStatus(HttpStatus.NOT_FOUND::equals, this::handleErrorResponse)
                 .bodyToFlux(GithubRepository.class)
-                .filter(repo -> !repo.isFork())
-                .flatMap(this::fetchBranchesForRepository)
-                .collectList();
+                .flatMap(this::fetchBranchesForRepository);
     }
 
     private Mono<GithubRepository> fetchBranchesForRepository(GithubRepository repo) {
         return webClient.get()
-                .uri(repo.getBranchesUrl())
+                .uri(repo.getBranches_url().replace("{/branch}", ""))
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, this::handleErrorResponse)
                 .bodyToFlux(Branch.class)
                 .collectList()
-                .map(branches -> {
-                    repo.setBranches(branches);
-                    return repo;
-                });
+                .map(branches ->{ repo.setBranches(branches); return repo;});
 
     }
 
     private Mono<? extends Throwable> handleErrorResponse(ClientResponse response) {
-        HttpStatusCode statusCode = response.statusCode();
+        var statusCode = response.statusCode();
         if (statusCode == HttpStatus.NOT_FOUND) {
             return Mono.error(new NotFoundException("The request data does not exist!"));
         } else {
