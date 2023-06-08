@@ -2,8 +2,16 @@
   {
     "name": "main",
     "commit": {
-      "sha": "c9dadb878fd72e787d1e888ed0e120da23afd795",
-      "url": "https://api.github.com/repos/pplebank/github_api_task/commits/c9dadb878fd72e787d1e888ed0e120da23afd795"
+      "sha": "test_1",
+      "url": "test_1"
+    },
+    "protected": false
+  },
+  {
+    "name": "branch_1",
+    "commit": {
+      "sha": "test_2",
+      "url": "test_2"
     },
     "protected": false
   }
